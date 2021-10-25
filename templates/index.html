@@ -142,6 +142,15 @@
 			visibility: hidden;
 		}
 	}
+	.feather-64{
+		width: 64px;
+		height: 64px;
+		position: absolute;
+		z-index: 0;
+		top: 11px;
+		right: 23px;
+		opacity: 0.4;
+	}
     </style>
 
 	</head>
@@ -159,7 +168,7 @@
 	<script src="static/js/Chart.min.js"></script>
 	<script src="static/js/dashboard.js"></script>
 	<script>
-		window.addEventListener('load', setTimeout(function(){
+		window.addEventListener('load', () => setTimeout(function(){
 			const anime = document.querySelector('#Loader');
 			anime.style.display = "none";
 		}, 500));
