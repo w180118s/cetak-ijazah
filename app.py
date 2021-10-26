@@ -1,4 +1,4 @@
-from flask import Flask, render_template
+from flask import Flask, render_template, redirect, url_for
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.orm import selectin_polymorphic
 from flask_bcrypt import Bcrypt
@@ -107,7 +107,7 @@ db.create_all()
 
 @app.route('/')
 def index():
-    return render_template('dashboard.html')
+    return render_template('index.html')
 
 @app.route('/dashboard')
 def dashboard():
