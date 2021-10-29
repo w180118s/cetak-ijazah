@@ -1,2 +1,1 @@
-oh iya
-lgi
+login to git on vscode + sinc other devices
