@@ -121,10 +121,6 @@ class Pasien(db.Model):
 
 db.create_all()
 
-@app.route('/')
-def index():
-    return redirect(url_for('login'))
-
 def login_dulu(f):
     @wraps(f)
     def wrap(*args, **kwargs):
@@ -132,13 +128,21 @@ def login_dulu(f):
             return f(*args, **kwargs)
         else:
             return redirect(url_for('login'))
-        return_wrap
+    return wrap
 
-@app.route('/login')
+@app.route('/')
+def index():
+    if session.get('login') == True:
+        return redirect(url_for('dashboard'))
+    return redirect(url_for('login'))
+
+@app.route('/login', methods=['GET', 'POST'])
 def login():
+    if session.get('login') == True:
+        return redirect(url_for('dashboard'))
     form = Login()
     if form.validate_on_submit():
-        user = User.query.filter_by(user=form.username.data).first()
+        user = User.query.filter_by(username=form.username.data).first()
         if user:
             if bcrypt.check_password_hash(user.password, form.password.data) and user.level == form.level.data:
                 session['login'] = True
@@ -150,8 +154,15 @@ def login():
     return render_template('login.html', form=form)
 
 @app.route('/dashboard')
+@login_dulu
 def dashboard():
     return render_template('dashboard.html')
+
+@app.route('/logout')
+@login_dulu
+def logout():
+    session.clear()
+    return redirect(url_for('login'))
 
 if __name__ == '__main__':
     app.run(debug=True)
