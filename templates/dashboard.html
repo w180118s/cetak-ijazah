@@ -13,6 +13,9 @@
 			</div>
 		</div>
 	 </div>
+
+	 {% if session.level == 'Admin' %}
+
 	<div class="row row-cols-1 row-cols-md-3 g-4">
 	  <div class="col-lg-3 lg-6">
 		<div class="card text-white bg-primary mb-3" style="max-width: 18rem;">
@@ -52,4 +55,22 @@
 	  </div>
 	</div>
   <canvas class="my-4 w-100" id="myChart" width="900" height="380"></canvas>
+
+  	{% elif session.level == 'Dokter' %}
+		<main class="container">
+			<div class="bg-light p-5 rounded">
+			<h1>Selamat Datang</h1>
+			<p class="lead">Ini adalah halaman Dashboard Dokter</p>
+			<a class="btn btn-lg btn-primary" href="#" role="button">Lihat Pasien yang ditangani &raquo;</a>
+			</div>
+		</main>
+	{% elif session.level == 'Administrasi' %}
+		<main class="container">
+			<div class="bg-light p-5 rounded">
+			<h1>Selamat Datang</h1>
+			<p class="lead">Ini adalah halaman Dashboard Administrasi</p>
+			<a class="btn btn-lg btn-primary" href="#" role="button">Pendaftaran Pasien &raquo;</a>
+			</div>
+		</main>
+  {% endif %}
 {% endblock %}

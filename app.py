@@ -1,9 +1,10 @@
-from flask import Flask, render_template, redirect, sessions, url_for, session
+from flask import Flask, render_template, request, redirect, sessions, url_for, session, flash
 from flask.scaffold import F
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.orm import backref, selectin_polymorphic
 from flask_bcrypt import Bcrypt
 from flask_wtf import FlaskForm
+# from werkzeug.wrappers import request
 from wtforms import StringField, PasswordField, SelectField
 from wtforms.validators import InputRequired
 from flask_bootstrap import Bootstrap
@@ -147,6 +148,7 @@ def login():
             if bcrypt.check_password_hash(user.password, form.password.data) and user.level == form.level.data:
                 session['login'] = True
                 session['id'] = user.id
+                session['username'] = user.username
                 session['level'] = user.level
                 return redirect(url_for('dashboard'))
         pesan = "Username atau Password anda salah"
@@ -157,6 +159,48 @@ def login():
 @login_dulu
 def dashboard():
     return render_template('dashboard.html')
+
+@app.route('/kelola_user')
+@login_dulu
+def kelola_user():
+    data=User.query.all()
+    return render_template('user.html', data=data)
+
+@app.route('/tambahuser', methods=['GET','POST'])
+@login_dulu
+def tambahuser():
+    if request.method == "POST":
+        username = request.form['username']
+        password = request.form['password']
+        level = request.form['level']
+        db.session.add(User(username, password, level))
+        db.session.commit()
+        return redirect(url_for('kelola_user'))
+
+@app.route('/edituser/<id>', methods=['GET', 'POST'])
+@login_dulu
+def edituser(id):
+    data = User.query.filter_by(id=id).first()
+    if request.method == 'POST':
+        try:
+            data.username = request.form['username']
+            if data.password !='':
+                data.password = bcrypt.generate_password_hash(request.form['password']).decode('UTF-8')
+            data.level = request.form['level']
+            db.session.add(data)
+            db.session.commit()
+            return redirect(url_for('kelola_user'))
+        except:
+            flash("Ada Trouble")
+            return redirect(request.referrer)
+
+@app.route('/hapususer/<id>', methods=['GET', 'POST'])
+@login_dulu
+def hapususer(id):
+    data = User.query.filter_by(id=id).first()
+    db.session.delete(data)
+    db.session.commit()
+    return redirect(url_for('kelola_user'))
 
 @app.route('/logout')
 @login_dulu
