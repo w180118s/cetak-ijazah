@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, sessions, url_for, session, flash
+from flask import Flask, render_template, request, redirect, sessions, url_for, session, flash, jsonify
 from flask.scaffold import F
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.orm import backref, selectin_polymorphic
@@ -201,6 +201,42 @@ def hapususer(id):
     db.session.delete(data)
     db.session.commit()
     return redirect(url_for('kelola_user'))
+
+@app.route('/pendaftaran')
+@login_dulu
+def pendaftaran():
+    data = Pendaftaran.query.all()
+    return render_template('/pendaftaran.html', data=data)
+
+@app.route('/dokter')
+@login_dulu
+def dokter():
+    data = Dokter.query.all()
+    return render_template('/dokter.html', data=data)
+
+@app.route('/tambahdokter', methods = ['GET', 'POST'])
+@login_dulu
+def tambahdokter():
+    if request.method == 'POST':
+        nama = request.form['nama']
+        jadwal = request.form['jadwal']
+        db.session.add(Dokter(nama, jadwal))
+        db.session.commit()
+        return jsonify({'success' :True})
+    else:
+        return redirect(request.referrer)
+
+@app.route('/apotek')
+@login_dulu
+def apotek():
+    data = Obat.query.all()
+    return render_template('/apotek.html', data=data)
+
+@app.route('/suplier')
+@login_dulu
+def suplier():
+    data = Suplier.query.all()
+    return render_template('/suplier.html', data=data)
 
 @app.route('/logout')
 @login_dulu
