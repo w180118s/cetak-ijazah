@@ -17,32 +17,62 @@
         <button type="button" class="btn btn-primary" data-bs-toggle="modal" 
         data-bs-target="#exampleModal" data-bs-whatever="@mdo">+Tambah Pasien</button>
         <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-            <div class="modal-dialog">
+            <div class="modal-dialog modal-lg">
                 <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLabel">User Baru</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <form action="{{url_for('tambahuser')}}" method="POST">
-                        <div class="mb-3">
-                            <label for="recipient-name" class="col-form-label">Username:</label>
-                            <input type="text" class="form-control" name="username" id="recipient-name">
-                        </div>
-                        <div class="mb-3">
-                            <label for="recipient-name" class="col-form-label">Password:</label>
-                            <input type="password" class="form-control" name="password" id="recipient-name">
-                        </div>
-                        <div class="mb-3">
-                            <label for="validationCustom04" class="form-label">Level</label>
-                            <select class="form-select" name="level" required>
-                            <option selected disabled value="">Pilih...</option>
-                            <option value="Admin">Admin</option>
-                            <option value="Dokter">Dokter</option>
-                            <option value="Administrasi">Administrasi</option>
-                            </select>
-                        </div>
-                    
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel">Daftar Baru</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form class="row g-3 needs-validation" action="{{url_for('tambahdaftar')}}" id="tambahdaftar" method="POST">
+                            <div class="col-md-4">
+                              <label for="validationCustom01" class="form-label">nama</label>
+                              <input type="text" class="form-control" id="validationCustom01" name="nama" required>
+                              <div class="valid-feedback">
+                                Looks good!
+                              </div>
+                            </div>
+                            <div class="col-md-4">
+                              <label for="validationCustom02" class="form-label">Tempat Lahir</label>
+                              <input type="text" class="form-control" id="validationCustom02" name="tl" required>
+                              <div class="valid-feedback">
+                                Looks good!
+                              </div>
+                            </div>
+                            <div class="col-md-4">
+                              <label for="validationCustomUsername" class="form-label">Tanggal Lahir</label>
+                              <div class="input-group has-validation">
+                                <span class="input-group-text" id="inputGroupPrepend">@</span>
+                                <input type="date" class="form-control" id="validationCustomUsername" name="tgl_lahir" aria-describedby="inputGroupPrepend" required>
+    
+                              </div>
+                            </div>
+                            <div class="col-md-4">
+                                <label for="validationCustom04" class="form-label">Jenis Kelamin</label>
+                                <select class="form-select" id="validationCustom04" name="jk" required>
+                                  <option selected disabled value="">Pilih...</option>
+                                  <option value="laki-laki">laki-laki</option>
+                                  <option value="Perempuan">Perempuan</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4">
+                                <label for="validationCustom04" class="form-label">Status Pernikahan</label>
+                                <select class="form-select" id="validationCustom04" name="status" required>
+                                  <option selected disabled value="">Pilih...</option>
+                                  <option value="belum menikah">Belum Menikah</option>
+                                  <option value="sudah menikah">Sudah Menikah</option>
+                                  <option value="bercerai">Bercerai</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4">
+                              <label for="validationCustom05" class="form-label">Profesi</label>
+                              <input type="text" class="form-control" id="validationCustom05" name="profesi" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="message-text" class="col-form-label">Alamat:</label>
+                                <textarea class="form-control" id="message-text" style="height: 100px;" name="alamat"></textarea>
+                            </div>
+                            <input type="hidden" name="keterangan" value="diproses">
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
@@ -55,7 +85,7 @@
         <br /> <br />
         <div class="card">
             <div class="card-header">
-              Tabel Pasien
+              <strong>Tabel Pasien</strong> 
             </div>
             <div class="card-body">
                 <table class="table table-bordered table-sm">
@@ -68,14 +98,19 @@
                         <th scope="col">Jenis Kelamin</th>
                         <th scope="col">Profesi</th>
                         <th scope="col">Alamat</th>
+                        <th scope="col">Aksi</th>
                       </tr>
                     </thead>
                     <tbody>
                         {% for dt in data %}
                       <tr>
                         <th scope="row">{{ loop.index }}</th>
-                        <td>{{dt.username}}</td>
-                        <td>{{dt.level}}</td>
+                        <td>{{dt.nama}}</td>
+                        <td>{{dt.tl}}</td>
+                        <td>{{dt.tgl_lahir}}</td>
+                        <td>{{dt.jk}}</td>
+                        <td>{{dt.profesi}}</td>
+                        <td>{{dt.alamat}}</td>
                         <td>
                             <button class="btn btn-sm btn-primary" data-bs-toggle="modal" 
                             data-bs-target="#exampleModal1{{dt.id}}" data-bs-whatever="@mdo">Edit</button>
@@ -141,4 +176,91 @@
             </div>
           </div>
 	</div>
+    {% block tail %}
+    <script>
+        $('#tambahdaftar').on('submit', async function(event) {
+            event.preventDefault();
+            const button = $(this).find('button[type=submit]')
+            button.attr('disabled','disabled')
+            const req = new XMLHttpRequest();
+            req.onload = () => {
+                const data = JSON.parse(req.responseText);
+                if(data.success) {
+                    alert("Data berhasil di tambahkan");
+                    location.reload();
+                } else {
+                    alert("Ada masalah");
+                }
+            }
+            const datanya = new FormData(this);
+            await req.open("POST", "/tambahdaftar", true);
+            req.send(datanya);
+        })
+        
+        // document.addEventListener("DOMContentLoaded", () => {
+        //     document.querySelector("#tambahdaftar").onsubmit = async (e) => {
+        //         e.preventDefault();
+        //         const req = new XMLHttpRequest();
+        //         req.onload = () => {
+        //             const data = JSON.parse(req.responseText);
+        //             if(data.success) {
+        //                 alert("Data berhasil di tambahkan");
+        //                 location.reload();
+        //             } else {
+        //                 alert("Ada masalah");
+        //             }
+        //         }
+        //         const form = document.querySelector("#tambahdaftar");
+        //         const datanya = new FormData(form);
+        //         await req.open("POST", "/tambahdaftar", true);
+        //         req.send(datanya);
+        //     }
+        // });
+
+        $('.edit-dokter').on('submit', async function(event) {
+            event.preventDefault()
+            const req = new XMLHttpRequest();
+            req.onload = () => {
+                const data = JSON.parse(req.responseText);
+                if(data.success) {
+                    alert("Data berhasil di rubah");
+                    location.reload();
+                } else {
+                    alert("Ada masalah");
+                }
+            }
+            const datanya = new FormData(this);
+            const url = this.getAttribute('action')
+            await req.open("POST", url, true);
+            req.send(datanya);
+        })
+
+        //
+        // ini script work, cuma vanilla
+        //
+        // document.addEventListener('DOMContentLoaded', () => {
+        //     document.querySelectorAll('.edit-dokter').forEach(element => {
+        //         element.addEventListener('submit', async(event) => {
+        //             event.preventDefault()
+        //             console.log(event.target)
+        //             const req = new XMLHttpRequest();
+        //             req.onload = () => {
+        //                 const data = JSON.parse(req.responseText);
+        //                 if(data.success) {
+        //                     alert("Data berhasil di rubah");
+        //                     location.reload();
+        //                 } else {
+        //                     alert("Ada masalah");
+        //                 }
+        //             }
+        //             const datanya = new FormData(element);
+        //             const url = element.getAttribute('action')
+        //             await req.open("POST", url, true);
+        //             req.send(datanya);
+        //         })
+        //     });
+        // })
+
+    </script>
+    {% endblock %}
 {% endblock %}

@@ -86,16 +86,18 @@ class Pendaftaran(db.Model):
     tl = db.Column(db.String(150))
     tgl_lahir = db.Column(db.String(150))
     jk = db.Column(db.String(150))
+    status = db.Column(db.String(150))
     profesi = db.Column(db.String(100))
     alamat = db.Column(db.Text)
     keterangan = db.Column(db.String(100))
     db.relationship('pasien', backref=db.backref('pendaftaran', lazy=True))
 
-    def __init__(self, nama, tl, tlg_lahir, jk, profesi, alamat, keterangan):
+    def __init__(self, nama, tl, tlg_lahir, jk, status, profesi, alamat, keterangan):
         self.nama = nama
         self.tl = tl
         self.tgl_lahir = tlg_lahir
         self.jk = jk
+        self.status = status
         self.profesi = profesi 
         self.alamat = alamat
         self.keterangan = keterangan
@@ -207,6 +209,26 @@ def hapususer(id):
 def pendaftaran():
     data = Pendaftaran.query.all()
     return render_template('/pendaftaran.html', data=data)
+
+@app.route('/tambahdaftar', methods=['GET', 'POST'])
+@login_dulu
+def tambahdaftar():
+    if request.method == "POST":
+        nama = request.form['nama']
+        tl = request.form['tl']
+        tgl_lahir = request.form['tgl_lahir']
+        jk = request.form['jk']
+        status = request.form['status']
+        profesi = request.form['profesi']
+        alamat = request.form['alamat']
+        keterangan = request.form['keterangan']
+        db.session.add(Pendaftaran(nama, tl, tgl_lahir, jk, status, profesi, alamat, keterangan))
+        db.session.commit()
+        return  jsonify({'success' :True})
+    else:
+        return redirect(request.referrer)
+
+    
 
 @app.route('/dokter')
 @login_dulu
