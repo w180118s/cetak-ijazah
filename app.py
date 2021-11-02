@@ -226,6 +226,27 @@ def tambahdokter():
     else:
         return redirect(request.referrer)
 
+@app.route('/editdokter/<id>', methods = ['GET', 'POST'])
+@login_dulu
+def editdokter(id):
+    data = Dokter.query.filter_by(id=id).first()
+    if request.method == 'POST':
+        data.nama = request.form['nama']
+        data.jadwal = request.form['jadwal']
+        db.session.add(data)
+        db.session.commit()
+        return jsonify({'success' :True})
+    else:
+        return redirect(request.referrer)
+
+@app.route('/hapusdokter/<id>', methods=['GET', 'POST'])
+@login_dulu
+def hapusdokter(id):
+    data = Dokter.query.filter_by(id=id).first()
+    db.session.delete(data)
+    db.session.commit()
+    return redirect(request.referrer)
+
 @app.route('/apotek')
 @login_dulu
 def apotek():
