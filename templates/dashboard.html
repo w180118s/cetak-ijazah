@@ -22,7 +22,7 @@
 		  <div class="card-body">
 		  <i class="feather-64" data-feather="users"></i>
 			<h5 class="card-title">Kunjungan</h5>
-			<p class="card-text">.</p>
+			<h5>{{data2}}</h5>
 		  </div>
 		</div>
 	  </div>
@@ -31,7 +31,7 @@
 		  <div class="card-body">
 		  <i class="feather-64" data-feather="user-plus"></i>
 			<h5 class="card-title">Dokter</h5>
-			<p class="card-text">.</p>
+			<h5>{{data1}}</h5>
 		  </div>
 		</div>
 	  </div>
@@ -40,7 +40,7 @@
 		  <div class="card-body">
 		  <i class="feather-64" data-feather="thumbs-down"></i>
 			<h5 class="card-title">Kerugian</h5>
-			<p class="card-text">.</p>
+			<h5>{{"Rp.{:,}".format(data4) }}</h5>
 		  </div>
 		</div>
 	  </div>
@@ -49,13 +49,17 @@
 		  <div class="card-body">
 		  <i class="feather-64" data-feather="smile"></i>
 			<h5 class="card-title">Jumlah User</h5>
-			<p class="card-text">.</p>
+			<h5>{{data3}}</h5>
 		  </div>
 		</div>
 	  </div>
 	</div>
-  <canvas class="my-4 w-100" id="myChart" width="900" height="380"></canvas>
-
+	<figure class="highcharts-figure">
+		<div id="container"></div>
+		<p class="highcharts-description">
+		Data diatas berdasarkan database dalam sistem aplikasi Klinik
+		</p>
+	
   	{% elif session.level == 'Dokter' %}
 		<main class="container">
 			<div class="bg-light p-5 rounded">
@@ -73,4 +77,68 @@
 			</div>
 		</main>
   {% endif %}
+
+  {% block tail %}
+  <script src="https://code.highcharts.com/highcharts.js"></script>
+  <script src="https://code.highcharts.com/modules/exporting.js"></script>
+  <script src="https://code.highcharts.com/modules/export-data.js"></script>
+  <script src="https://code.highcharts.com/modules/accessibility.js"></script>
+  <script>
+	  // Radialize the colors
+Highcharts.setOptions({
+    colors: Highcharts.map(Highcharts.getOptions().colors, function (color) {
+        return {
+            radialGradient: {
+                cx: 0.5,
+                cy: 0.3,
+                r: 0.7
+            },
+            stops: [
+                [0, color],
+                [1, Highcharts.color(color).brighten(-0.3).get('rgb')] // darken
+            ]
+        };
+    })
+});
+
+// Build the chart
+Highcharts.chart('container', {
+    chart: {
+        plotBackgroundColor: null,
+        plotBorderWidth: null,
+        plotShadow: false,
+        type: 'pie'
+    },
+    title: {
+        text: 'Grafik Keuntungan dan Kerugian'
+    },
+    tooltip: {
+        pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'
+    },
+    accessibility: {
+        point: {
+            valueSuffix: '%'
+        }
+    },
+    plotOptions: {
+        pie: {
+            allowPointSelect: true,
+            cursor: 'pointer',
+            dataLabels: {
+                enabled: true,
+                format: '<b>{point.name}</b>: {point.percentage:.1f} %',
+                connectorColor: 'silver'
+            }
+        }
+    },
+    series: [{
+        name: 'Share',
+        data: [
+            { name: 'Chrome', y: 61.41 },
+            { name: 'Internet Explorer', y: 11.84 },
+        ]
+    }]
+});
+  </script>
+  {% endblock %}
 {% endblock %}

@@ -88,7 +88,7 @@
               <strong>Tabel Pasien</strong> 
             </div>
             <div class="card-body">
-                <table class="table table-bordered table-sm">
+                <table class="table table-bordered table-sm" id="myTable">
                     <thead class="table table-dark">
                       <tr>
                         <th scope="col">No</th>
@@ -113,44 +113,75 @@
                         <td>{{dt.alamat}}</td>
                         <td>
                             <button class="btn btn-sm btn-primary" data-bs-toggle="modal" 
-                            data-bs-target="#exampleModal1{{dt.id}}" data-bs-whatever="@mdo">Edit</button>
+                            data-bs-target="#exampleModal1{{dt.id}}" data-bs-whatever="@mdo"><b>+</b></button>
                                 <div class="modal fade" id="exampleModal1{{dt.id}}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                                    <div class="modal-dialog">
+                                    <div class="modal-dialog modal-lg">
                                         <div class="modal-content">
                                         <div class="modal-header">
-                                            <h5 class="modal-title" id="exampleModalLabel">Edit Baru</h5>
+                                            <h5 class="modal-title" id="exampleModalLabel">Edit Daftar</h5>
                                             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                         </div>
                                         <div class="modal-body">
-                                            <form action="/edituser/{{dt.id}}" method="POST">
-                                                <div class="mb-3">
-                                                    <label for="recipient-name" class="col-form-label">Username:</label>
-                                                    <input type="text" class="form-control" value="{{dt.username}}" name="username" id="recipient-name">
+                                            <form class="row g-3 needs-validation edit-daftar" action="/editdaftar/{{dt.id}}" method="POST">
+                                                <div class="col-md-4">
+                                                  <label for="validationCustom01" class="form-label">nama</label>
+                                                  <input type="text" class="form-control" id="validationCustom01" name="nama" value="{{dt.nama}}" required>
+                                                  <div class="valid-feedback">
+                                                    Looks good!
+                                                  </div>
                                                 </div>
-                                                <div class="mb-3">
-                                                    <label for="recipient-name" class="col-form-label">Password:</label>
-                                                    <input type="password" class="form-control" name="password" id="recipient-name" required>
+                                                <div class="col-md-4">
+                                                  <label for="validationCustom02" class="form-label">Tempat Lahir</label>
+                                                  <input type="text" class="form-control" id="validationCustom02" value="{{dt.tl}}" name="tl" required>
+                                                  <div class="valid-feedback">
+                                                    Looks good!
+                                                  </div>
                                                 </div>
-                                                <div class="mb-3">
-                                                    <label for="validationCustom04" class="form-label">Level</label>
-                                                    <select class="form-select" name="level" required>
-                                                    <option selected disabled value="">Pilih...</option>
-                                                    <option value="Admin">Admin</option>
-                                                    <option value="Dokter">Dokter</option>
-                                                    <option value="Administrasi">Administrasi</option>
+                                                <div class="col-md-4">
+                                                  <label for="validationCustomUsername" class="form-label">Tanggal Lahir</label>
+                                                  <div class="input-group has-validation">
+                                                    <span class="input-group-text" id="inputGroupPrepend">@</span>
+                                                    <input type="date" class="form-control" id="validationCustomUsername" value="{{dt.tgl_lahir}}" name="tgl_lahir" aria-describedby="inputGroupPrepend" required>
+                        
+                                                  </div>
+                                                </div>
+                                                <div class="col-md-4">
+                                                    <label for="validationCustom04" class="form-label">Jenis Kelamin</label>
+                                                    <select class="form-select" id="validationCustom04" name="jk" value="{{dt.jk}}" required>
+                                                      <option disabled value="">Pilih...</option>
+                                                      <option value="laki-laki" {{ 'selected' if dt.jk == 'laki-laki' else '' }}>laki-laki</option>
+                                                      <option value="Perempuan" {{ 'selected' if dt.jk == 'perempuan' else '' }}>Perempuan</option>
                                                     </select>
                                                 </div>
-                                            </div>
-                                            <div class="modal-footer">
-                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                                                <button type="submit" class="btn btn-primary">Simpan</button>
-                                            </div>
+                                                <div class="col-md-4">
+                                                    <label for="validationCustom04" class="form-label">Status Pernikahan</label>
+                                                    <select class="form-select" id="validationCustom04" name="status" value="{{dt.status}}" required>
+                                                      <option disabled value="">Pilih...</option>
+                                                      <option value="belum menikah" {{ 'selected' if dt.status == 'belum menikah' else '' }}>Belum Menikah</option>
+                                                      <option value="sudah menikah" {{ 'selected' if dt.status == 'sudah menikah' else '' }}>Sudah Menikah</option>
+                                                      <option value="bercerai" {{ 'selected' if dt.status == 'bercerai' else '' }}>Bercerai</option>
+                                                    </select>
+                                                </div>
+                                                <div class="col-md-4">
+                                                  <label for="validationCustom05" class="form-label">Profesi</label>
+                                                  <input type="text" class="form-control" id="validationCustom05" value="{{dt.profesi}}" name="profesi" required>
+                                                </div>
+                                                <div class="mb-3">
+                                                    <label for="message-text" class="col-form-label">Alamat:</label>
+                                                    <textarea class="form-control" id="message-text" style="height: 100px;" value="{{dt.alamat}}" name="alamat">{{dt.alamat}}</textarea>
+                                                </div>
+                                                <input type="hidden" name="keterangan" value="diproses">
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <input type="hidden" value="{{dt.id}}" id="eDf" >
+                                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                                    <button type="submit" class="btn btn-primary">Simpan</button>
+                                                </div>
                                             </form>
                                         </div>
                                     </div>
                                 </div>
-                                <a href="" class="btn btn-sm btn-danger" data-bs-toggle="modal" 
-                                data-bs-target="#exampleModal2{{dt.id}}" data-bs-whatever="@mdo">Hapus</a>
+                                <a href="" class="btn btn-sm btn-danger" data-bs-toggle="modal" data-bs-target="#exampleModal2{{dt.id}}" data-bs-whatever="@mdo"><b>x</b></b></a>
                                     <div class="modal fade" id="exampleModal2{{dt.id}}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
                                         <div class="modal-dialog modal-dialog-centered">
                                             <div class="modal-content">
@@ -162,7 +193,7 @@
                                                 <h5>Apakah anda yakin ingin menghapus user ini?</h5>
                                                 <div class="modal-footer">
                                                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
-                                                    <a href="/hapususer/{{dt.id}}" type="submit" class="btn btn-primary">Ya, Hapus</a>
+                                                    <a href="/hapusdaftar/{{dt.id}}" type="submit" class="btn btn-primary">Ya, Hapus</a>
                                                 </div>
                                                 </form>
                                             </div>
@@ -217,49 +248,49 @@
         //     }
         // });
 
-        $('.edit-dokter').on('submit', async function(event) {
-            event.preventDefault()
-            const req = new XMLHttpRequest();
-            req.onload = () => {
-                const data = JSON.parse(req.responseText);
-                if(data.success) {
-                    alert("Data berhasil di rubah");
-                    location.reload();
-                } else {
-                    alert("Ada masalah");
-                }
-            }
-            const datanya = new FormData(this);
-            const url = this.getAttribute('action')
-            await req.open("POST", url, true);
-            req.send(datanya);
-        })
+        // $('.edit-daftar').on('submit', async function(event) {
+        //     event.preventDefault()
+        //     const req = new XMLHttpRequest();
+        //     req.onload = () => {
+        //         const data = JSON.parse(req.responseText);
+        //         if(data.success) {
+        //             alert("Data berhasil di rubah");
+        //             location.reload();
+        //         } else {
+        //             alert("Ada masalah");
+        //         }
+        //     }
+        //     const datanya = new FormData(this);
+        //     const url = this.getAttribute('action')
+        //     await req.open("POST", url, true);
+        //     req.send(datanya);
+        // })
 
         //
         // ini script work, cuma vanilla
         //
-        // document.addEventListener('DOMContentLoaded', () => {
-        //     document.querySelectorAll('.edit-dokter').forEach(element => {
-        //         element.addEventListener('submit', async(event) => {
-        //             event.preventDefault()
-        //             console.log(event.target)
-        //             const req = new XMLHttpRequest();
-        //             req.onload = () => {
-        //                 const data = JSON.parse(req.responseText);
-        //                 if(data.success) {
-        //                     alert("Data berhasil di rubah");
-        //                     location.reload();
-        //                 } else {
-        //                     alert("Ada masalah");
-        //                 }
-        //             }
-        //             const datanya = new FormData(element);
-        //             const url = element.getAttribute('action')
-        //             await req.open("POST", url, true);
-        //             req.send(datanya);
-        //         })
-        //     });
-        // })
+        document.addEventListener('DOMContentLoaded', () => {
+            var forms = document.querySelectorAll('.edit-daftar')
+            forms.forEach(element => {
+                element.addEventListener('submit', async(event) => {
+                    event.preventDefault()
+                    const req = new XMLHttpRequest();
+                    req.onload = () => {
+                        const data = JSON.parse(req.responseText);
+                        if(data.success) {
+                            alert("Data berhasil di rubah");
+                            location.reload();
+                        } else {
+                            alert("Ada masalah");
+                        }
+                    }
+                    const datanya = new FormData(element);
+                    const url = element.getAttribute('action')
+                    await req.open("POST", url, true);
+                    req.send(datanya);
+                })
+            });
+        })
 
     </script>
     {% endblock %}
