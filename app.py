@@ -431,7 +431,13 @@ def cari_data():
         keyword = request.form['q']
         formt = "%{0}%".format(keyword)
         datanya = Pasien.query.join(User, Pasien.user_id == User.id).filter(or_(Pasien.tanggal.like(formt))).all()
+        if datanya:
+            flash("Data Berhasil di temukan")
+        elif not datanya:
+            pesan = "Tidak ada Pasien yang diproses pada waktu tersebut"
+            return render_template('/pencarian.html', datanya=datanya, pesan=pesan)
         return render_template('/pencarian.html', datanya=datanya)
+        
 
 
 @app.route('/logout')

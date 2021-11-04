@@ -42,15 +42,28 @@
             <option value="2023">2023</option>
           </select>
       </div>
-    <br>
+      
     <div>
       <button class="btn btn-sm btn-success" type="submit">Cari</button>
     </div>
-
+      {% with messages = get_flashed_messages() %}
+      {% if messages %}
+        {% for message in messages %}
+          <div class="alert alert-success alert-dismissible fade show" role="alert">
+            <strong>{{message}}</strong>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+          </div>
+        {% endfor %}
+      {% endif %}
+      {% if pesan %}
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+          <strong>{{pesan}}</strong>
+          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+      {% endif %}
+      {% endwith %}
     </form>
-      <br>
-      <br>
-        <div class="card">
+        <div class="card" style="margin-top: 10px;">
             <div class="card-header">
               Tabel Obat
             </div>
