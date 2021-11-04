@@ -76,7 +76,6 @@
                         <th scope="col">Diagnosa</th>
                         <th scope="col">Dokter</th>
                         <th scope="col">Tanggal Periksa</th>
-
                       </tr>
                     </thead>
                     <tbody>
@@ -93,5 +92,8 @@
                   </table>
             </div>
           </div>
+          {% if tombol == tombol %}
+          <a class="btn btn-danger" style="margin: 5px;" target="new" href="/cetak_pdf/{{keyword}}">Cetak Laporan</a>
+          {% endif %}
 	</div>
 {% endblock %}

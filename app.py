@@ -1,17 +1,19 @@
-from flask import Flask, render_template, request, redirect, sessions, url_for, session, flash, jsonify
+from flask import Flask, render_template, request, redirect, sessions, url_for, session, flash, jsonify, current_app, make_response
 from flask.scaffold import F
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import func, or_
 from sqlalchemy.orm import backref, selectin_polymorphic
 from flask_bcrypt import Bcrypt
 from flask_wtf import FlaskForm
+from werkzeug.wrappers import response
 # from werkzeug.wrappers import request
 from wtforms import StringField, PasswordField, SelectField
 from wtforms.validators import InputRequired
 from flask_bootstrap import Bootstrap
 from functools import wraps
-from flask_migrate import Migrate, migrate
+from flask_migrate import Config, Migrate, migrate
 import datetime
+import pdfkit
 
 app = Flask(__name__)
 
@@ -433,12 +435,24 @@ def cari_data():
         datanya = Pasien.query.join(User, Pasien.user_id == User.id).filter(or_(Pasien.tanggal.like(formt))).all()
         if datanya:
             flash("Data Berhasil di temukan")
+            tombol = "tombol"
         elif not datanya:
             pesan = "Tidak ada Pasien yang diproses pada waktu tersebut"
             return render_template('/pencarian.html', datanya=datanya, pesan=pesan)
-        return render_template('/pencarian.html', datanya=datanya)
-        
+        return render_template('/pencarian.html', datanya=datanya, tombol=tombol, keyword=keyword)
 
+@app.route('/cetak_pdf/<keyword>', methods=['GET', 'POST'])
+@login_dulu
+def cetak_pdf(keyword):
+    formt = "%{0}%".format(keyword)
+    datanya = Pasien.query.join(User, Pasien.user_id == User.id).filter(or_(Pasien.tanggal.like(formt))).all()
+    html = render_template("pdf.html", datanya=datanya)
+    Config = pdfkit.configuration(wkhtmltopdf= "C:\\Program Files\\wkhtmltopdf\\bin\\wkhtmltopdf.exe")
+    pdf = pdfkit.from_string(html, False, configuration=Config)
+    response = make_response(pdf)
+    response.headers['Content-Type'] = 'aplication/pdf'
+    response.headers['Content-Disposition'] = 'inline; filename=laporan.pdf'
+    return response
 
 @app.route('/logout')
 @login_dulu
