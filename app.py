@@ -1,7 +1,7 @@
 from flask import Flask, render_template, request, redirect, sessions, url_for, session, flash, jsonify
 from flask.scaffold import F
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy import func
+from sqlalchemy import func, or_
 from sqlalchemy.orm import backref, selectin_polymorphic
 from flask_bcrypt import Bcrypt
 from flask_wtf import FlaskForm
@@ -11,6 +11,7 @@ from wtforms.validators import InputRequired
 from flask_bootstrap import Bootstrap
 from functools import wraps
 from flask_migrate import Migrate, migrate
+import datetime
 
 app = Flask(__name__)
 
@@ -116,16 +117,16 @@ class Pasien(db.Model):
     resep = db.Column(db.Text)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     pendaftaran_id = db.Column(db.Integer, db.ForeignKey('pendaftaran.id'))
-    alamat = db.Column(db.Text)
+    tanggal = db.Column(db.String(100))
 
-    def __init__(self, nama, keluhan, diagnosa, resep, user_id, pendaftaran_id, alamat):
+    def __init__(self, nama, keluhan, diagnosa, resep, user_id, pendaftaran_id, tanggal):
         self.nama = nama
         self.keluhan = keluhan
         self.diagnosa = diagnosa
         self.resep = resep
         self.user_id = user_id
         self.pendaftaran_id = pendaftaran_id
-        self.alamat = alamat
+        self.tanggal = tanggal
 
 db.create_all()
 
@@ -392,6 +393,46 @@ def hapussuplier(id):
     db.session.delete(data)
     db.session.commit()
     return redirect(request.referrer)
+
+@app.route('/tangani_pasien')
+@login_dulu
+def tangani_pasien():
+    data = Pendaftaran.query.filter_by(keterangan='diproses').all()
+    return render_template('/tangani.html', data=data)
+
+@app.route('/diagnosis/<id>', methods=['GET', 'POST'])
+@login_dulu
+def diagnosis(id):
+    data = Pendaftaran.query.filter_by(id=id).first()
+    if request.method == "POST":
+        nama = request.form['nama']
+        keluhan = request.form['keluhan']
+        diagnosa = request.form['diagnosa']
+        resep = request.form['resep']
+        user_id = request.form['user_id']
+        pendaftaran_id = request.form['pendaftaran_id']
+        tanggal = datetime.datetime.now().strftime("%d %B %Y jam %H:%M:%Y")
+        data.keterangan = "Selesai"
+        db.session.add((data))
+        db.session.commit()
+        db.session.add(Pasien(nama, keluhan, diagnosa, resep, user_id, pendaftaran_id, tanggal))
+        db.session.commit()
+        return redirect(request.referrer)
+
+@app.route('/pencarian')
+@login_dulu
+def pencarian():
+    return render_template('/pencarian.html')
+    
+@app.route('/cari_data', methods=['GET', 'POST'])
+@login_dulu
+def cari_data():
+    if request.method == 'POST':
+        keyword = request.form['q']
+        formt = "%{0}%".format(keyword)
+        datanya = Pasien.query.join(User, Pasien.user_id == User.id).filter(or_(Pasien.tanggal.like(formt))).all()
+        return render_template('/pencarian.html', datanya=datanya)
+
 
 @app.route('/logout')
 @login_dulu

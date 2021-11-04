@@ -2,6 +2,27 @@
 
 {% block body %}
 <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+
+    {% if session.level == 'Dokter' %}
+    <!-- <div>
+        <h2>
+            Anda tidak berhak mengakses halaman ini!! <a href="/dashboard" class="btn btn-sm btn-danger">Kembali</a>
+        </h2>
+    </div> -->
+    <div class="card" style="margin-top: 50px;">
+        <div class="card">
+            <div class="card-header">
+                <strong>Hello {{session.level}}</strong> 
+            </div>
+        </div>
+        <div class="card-body">
+          <h5 class="card-title">Error 404</h5>
+          <p class="card-text">Anda tidak berhak mengakses halaman ini!</p>
+          <a href="/dashboard" class="btn btn-primary" >kembali</a>
+        </div>
+      </div>
+
+{% else %}
   <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
 	<h3 class="h2">Kelola Dokter</h3>
 	
@@ -13,6 +34,7 @@
 			</div>
 		</div>
 	 </div>
+    
 	<div class="container">
         <button type="button" class="btn btn-primary" data-bs-toggle="modal" 
         data-bs-target="#exampleModal" data-bs-whatever="@mdo">+Tambah Dokter</button>
@@ -207,4 +229,5 @@
 
     </script>
     {% endblock %}
+    {% endif %}
 {% endblock %}

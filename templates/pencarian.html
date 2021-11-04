@@ -1,0 +1,84 @@
+{% extends 'index.html' %}
+
+{% block body %}
+<main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+  <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+	<h3 class="h2">Pencarian Pasien</h3>
+	
+  </div>
+	 <div id="Loader">
+		<div class="d-flex justify-content-center">
+			<div class="spinner-border text-success" style=" width: 5rem; height: 5rem;" role="status">
+				<span class="visually-hidden">Loading...</span>
+			</div>
+		</div>
+	 </div>
+	<div class="container">
+    <form class="row g-3" action="/cari_data" method="POST">
+      <div class="col-md-3">
+        <label for="validationCustom04" class="form-label"><strong>Bulan</strong> </label>
+          <select class="form-select" id="validationCustom04" name="q" required>
+            <option selected disabled value="">Pilih...</option>
+            <option value="January">Januari</option>
+            <option value="February">Februari</option>
+            <option value="March">Maret</option>
+            <option value="April">April</option>
+            <option value="May">Mei</option>
+            <option value="June">Juni</option>
+            <option value="July">Juli</option>
+            <option value="August">Agustus</option>
+            <option value="September">September</option>
+            <option value="October">Oktober</option>
+            <option value="November">November</option>
+            <option value="December">Desember</option>
+          </select>
+      </div>
+      <div class="col-md-3">
+        <label for="validationCustom04" class="form-label"><strong>Tahun</strong> </label>
+          <select class="form-select" id="validationCustom04" required name="q">
+            <option selected disabled value="">Pilih...</option>
+            <option value="2021">2021</option>
+            <option value="2022">2022</option>
+            <option value="2023">2023</option>
+          </select>
+      </div>
+    <br>
+    <div>
+      <button class="btn btn-sm btn-success" type="submit">Cari</button>
+    </div>
+
+    </form>
+      <br>
+      <br>
+        <div class="card">
+            <div class="card-header">
+              Tabel Obat
+            </div>
+            <div class="card-body">
+                <table class="table table-bordered table-sm" id="myTable">
+                    <thead class="table table-dark">
+                      <tr>
+                        <th scope="col">No</th>
+                        <th scope="col">Nama </th>
+                        <th scope="col">Diagnosa</th>
+                        <th scope="col">Dokter</th>
+                        <th scope="col">Tanggal Periksa</th>
+
+                      </tr>
+                    </thead>
+                    <tbody>
+                        {% for dt in datanya %}
+                      <tr>
+                        <th scope="row">{{ loop.index }}</th>
+                        <td>{{dt.nama}}</td>
+                        <td>{{dt.diagnosa}}</td>
+                        <td>{{dt.user.username}}</td>
+                        <td>{{dt.tanggal}}</td>
+                      </tr>
+                      {% endfor %}
+                    </tbody>
+                  </table>
+            </div>
+          </div>
+	</div>
+{% endblock %}
