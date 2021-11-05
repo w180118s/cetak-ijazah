@@ -84,6 +84,16 @@
 					Suplier
 					</a>
 				</li>
+
+				{% elif session.level == 'konsumen'%}
+
+				<li class="nav-item">
+					<a class="nav-link" href="/pembelian">
+					<span data-feather="users"></span>
+					Pembelian
+					</a>
+				</li>
+
 				{% endif %}
 			</ul>
 

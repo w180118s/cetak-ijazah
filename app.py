@@ -47,18 +47,31 @@ class User(db.Model):
             self.password = bcrypt.generate_password_hash(password).decode('UTF-8')
         self.level = level
 
+#Database studi kasus login multi otentikasi
 class Konsumen(db.Model):
     __tablename__ = 'konsumen'
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(100))
     password = db.Column(db.Text)
     level = db.Column(db.String(100))
+    konsumennya = db.relationship('Pembelian', backref=db.backref('konsumen', lazy=True))
 
     def __init__(self, username, password, level):
         self.username = username
         if password !='':
             self.password = bcrypt.generate_password_hash(password).decode('UTF-8')
         self.level = level
+
+#Database Studi Kasus bulk insert
+class Pembelian(db.Model):
+    __tablename__ = 'pembelian'
+    id = db.Column(db.Integer, primary_key=True)
+    id_konsumen = db.Column(db.Integer, db.ForeignKey('konsumen.id'))
+    id_obat = db.Column(db.Integer, db.ForeignKey('obat.id'))
+
+    def __init__(self, id_konsumen, id_obat):
+        self.id_konsumen = id_konsumen
+        self.id_obat = id_obat
 
 class Dokter(db.Model):
     __tablename__ = 'dokter'
@@ -103,6 +116,7 @@ class Obat(db.Model):
     harga_jual = db.Column(db.Integer)
     kondisi = db.Column(db.String(80))
     suplier_id = db.Column(db.Integer, db.ForeignKey('suplier.id'))
+    obatnya = db.relationship('Pembelian', backref=db.backref('obat', lazy=True))
 
     def __init__(self, namaObat, jenisObat, harga_beli, harga_jual, kondisi, suplier_id):
         self.namaObat = namaObat
@@ -178,10 +192,10 @@ def login():
         return redirect(url_for('dashboard'))
     form = Login()
     if form.validate_on_submit():
-        if form.level.data == 'konsumen':
+        if form.level.data == 'konsumen': #validasi User Konsumen
             user = Konsumen.query.filter_by(username=form.username.data).first()
         else:
-            user = User.query.filter_by(username=form.username.data).first()
+            user = User.query.filter_by(username=form.username.data).first() #Validasi admin, dokter dan administrasi
         if user:
             if bcrypt.check_password_hash(user.password, form.password.data) and user.level == form.level.data:
                 session['login'] = True
@@ -442,7 +456,7 @@ def diagnosis(id):
         user_id = request.form['user_id']
         pendaftaran_id = request.form['pendaftaran_id']
         tanggal = datetime.datetime.now().strftime("%d %B %Y jam %H:%M:%Y")
-        data.keterangan = "Selesai"
+        data.keterangan = "Selesai" #Merubah field keterangan pada database pendaftaran
         db.session.add((data))
         db.session.commit()
         db.session.add(Pasien(nama, keluhan, diagnosa, resep, user_id, pendaftaran_id, tanggal))
@@ -488,6 +502,24 @@ def logout():
     session.clear()
     return redirect(url_for('login'))
 
+@app.route('/pembelian')
+@login_dulu
+def pembelian():
+    data = Obat.query.all()
+    return render_template('/pembelian.html', data=data)
+
+#Bulk Insert 
+@app.route('/tambah_pembelian', methods = ['GET', 'POST'])
+@login_dulu
+def tambah_pembelian():
+    if request.method == 'POST':
+        id_konsumen = request.form['id_konsumen']
+        for key in request.form.getlist('id_obat'):
+            db.session.add(Pembelian(id_konsumen, key))
+        
+        db.session.commit()
+        return redirect(request.referrer)
+
 @app.route('/import_csv',  methods=['GET', 'POST'])
 def import_csv():
     if request.method == 'GET':
@@ -509,7 +541,6 @@ def import_csv():
         except:
             response = 'gagal'
         return response
-
 
 
 if __name__ == '__main__':

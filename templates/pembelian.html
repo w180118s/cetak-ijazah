@@ -1,0 +1,50 @@
+{% extends 'index.html' %}
+
+{% block body %}
+<main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+  <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+	<h3 class="h2">Pembelian Obat</h3>
+	
+  </div>
+	 <div id="Loader">
+		<div class="d-flex justify-content-center">
+			<div class="spinner-border text-success" style=" width: 5rem; height: 5rem;" role="status">
+				<span class="visually-hidden">Loading...</span>
+			</div>
+		</div>
+	 </div>
+    
+	<div class="container">
+        <div class="card">
+            <div class="card-header">
+              Tabel Obat
+            </div>
+            <div class="card-body">
+                <form action="/tambah_pembelian" method="POST">
+                <table class="table table-bordered table-sm" id="myTable">
+                    <thead class="table table-dark">
+                      <tr>
+                        <th scope="col">No</th>
+                        <th scope="col">Nama Obat</th>
+                        <th scope="col">Jenis Obat</th>
+                        <th scope="col">Pilih</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                        {% for dt in data %}
+                      <tr>
+                        <th scope="row">{{ loop.index }}</th>
+                        <td>{{dt.namaObat}}</td>
+                        <td>{{dt.jenisObat}}</td>
+                        <td><input class="form-check-input" name="id_obat[]" value="{{dt.id}}" type="checkbox"></td>
+                      </tr>
+                      {% endfor %}
+                    </tbody>
+                  </table>
+            </div>
+          </div>
+          <input type="hidden" name="id_konsumen" value="{{session.id}}">
+          <button type="submit" class="btn btn-sm btn-success" style="margin-top: 10px;">Beli Obat</button>
+        </form>
+	</div>
+{% endblock %}
