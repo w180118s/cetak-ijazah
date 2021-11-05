@@ -12,6 +12,7 @@ from wtforms.validators import InputRequired
 from flask_bootstrap import Bootstrap
 from functools import wraps
 from flask_migrate import Config, Migrate, migrate
+import pandas as pd
 import datetime
 import pdfkit
 
@@ -30,7 +31,7 @@ class Login(FlaskForm):
     username = StringField('', validators=[InputRequired()], render_kw={'autofocus' :True, 'placeholder' : 'Username'})
     password = PasswordField('', validators=[InputRequired()], render_kw={'autofocus' :True, 'placeholder' : 'Password'})
     level = SelectField('', validators=[InputRequired()], choices=[('Admin', 'Admin'), ('Dokter', 'Dokter'), 
-                                                                    ('Administrasi', 'Administrasi')])
+                                                                    ('Administrasi', 'Administrasi'),('konsumen', 'Konsumen')])
 
 class User(db.Model):
     __tablename__ = 'user'
@@ -39,6 +40,19 @@ class User(db.Model):
     password = db.Column(db.Text)
     level = db.Column(db.String(100))
     usernya = db.relationship('Pasien', backref=db.backref('user', lazy=True))
+
+    def __init__(self, username, password, level):
+        self.username = username
+        if password !='':
+            self.password = bcrypt.generate_password_hash(password).decode('UTF-8')
+        self.level = level
+
+class Konsumen(db.Model):
+    __tablename__ = 'konsumen'
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(100))
+    password = db.Column(db.Text)
+    level = db.Column(db.String(100))
 
     def __init__(self, username, password, level):
         self.username = username
@@ -55,6 +69,17 @@ class Dokter(db.Model):
     def __init__(self, nama, jadwal):
         self.nama = nama
         self.jadwal = jadwal
+
+#database percobaan upload csv
+class Biodata(db.Model):
+    __tablename__ = 'biodata'
+    id = db.Column(db.Integer, primary_key=True)
+    nama = db.Column(db.String(150))
+    belakang = db.Column(db.String(150))
+    
+    def __init__(self, nama, belakang):
+        self.nama = nama
+        self.belakang = belakang
 
 class Suplier(db.Model):
     __tablename__ = 'suplier'
@@ -153,7 +178,10 @@ def login():
         return redirect(url_for('dashboard'))
     form = Login()
     if form.validate_on_submit():
-        user = User.query.filter_by(username=form.username.data).first()
+        if form.level.data == 'konsumen':
+            user = Konsumen.query.filter_by(username=form.username.data).first()
+        else:
+            user = User.query.filter_by(username=form.username.data).first()
         if user:
             if bcrypt.check_password_hash(user.password, form.password.data) and user.level == form.level.data:
                 session['login'] = True
@@ -450,7 +478,7 @@ def cetak_pdf(keyword):
     Config = pdfkit.configuration(wkhtmltopdf= "C:\\Program Files\\wkhtmltopdf\\bin\\wkhtmltopdf.exe")
     pdf = pdfkit.from_string(html, False, configuration=Config)
     response = make_response(pdf)
-    response.headers['Content-Type'] = 'aplication/pdf'
+    response.headers['Content-Type'] = 'application/pdf'
     response.headers['Content-Disposition'] = 'inline; filename=laporan.pdf'
     return response
 
@@ -459,6 +487,30 @@ def cetak_pdf(keyword):
 def logout():
     session.clear()
     return redirect(url_for('login'))
+
+@app.route('/import_csv',  methods=['GET', 'POST'])
+def import_csv():
+    if request.method == 'GET':
+        return render_template('/import.html')
+    else:
+        try:
+            file = request.files['file']
+            read = pd.read_csv(file,delimiter=";",header=0)
+            data = read.to_numpy()
+            
+            for row in data:
+                nama = row[1]
+                belakang = row[2]
+                # disini
+                db.session.add(Biodata(nama, belakang))
+
+            db.session.commit()
+            response = 'berhasil'
+        except:
+            response = 'gagal'
+        return response
+
+
 
 if __name__ == '__main__':
     app.run(debug=True)
