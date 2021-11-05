@@ -40,7 +40,11 @@
 		  <div class="card-body">
 		  <i class="feather-64" data-feather="thumbs-down"></i>
 			<h5 class="card-title">Kerugian</h5>
+			{% if data4 == None %}
+			<h5>Rp.0</h5>
+			{% else %}
 			<h5>{{"Rp.{:,}".format(data4) }}</h5>
+			{% endif %}
 		  </div>
 		</div>
 	  </div>
@@ -54,17 +58,17 @@
 		</div>
 	  </div>
 	</div>
-	<!-- <figure class="highcharts-figure">
-		<div id="container"></div>
+	<figure class="highcharts-figure">
+		<div id="container" data-baik="{{ data5 }}" data-rusak="{{ data4 }}"></div>
 		<p class="highcharts-description">
 		Data diatas berdasarkan database dalam sistem aplikasi Klinik
-		</p> -->
+		</p>
 	
   	{% elif session.level == 'Dokter' %}
 		<main class="container">
 			<div class="bg-light p-5 rounded">
 			<h1>Selamat Datang</h1>
-			<p class="lead">Ini adalah halaman Dashboard Dokter</p>
+			<p class="lead">Ini adalah halaman Dashboard {{session.username}}</p>
 			<a class="btn btn-lg btn-primary" href="#" role="button">Lihat Pasien yang ditangani &raquo;</a>
 			</div>
 		</main>
@@ -72,21 +76,26 @@
 		<main class="container">
 			<div class="bg-light p-5 rounded">
 			<h1>Selamat Datang</h1>
-			<p class="lead">Ini adalah halaman Dashboard Administrasi</p>
+			<p class="lead">Ini adalah halaman Dashboard {{session.username}}</p>
 			<a class="btn btn-lg btn-primary" href="/pendaftaran" role="button">Pendaftaran Pasien &raquo;</a>
 			</div>
 		</main>
   {% endif %}
 
-  <!-- {% block tail %}
+  {% block tail %}
   <script src="https://code.highcharts.com/highcharts.js"></script>
   <script src="https://code.highcharts.com/modules/exporting.js"></script>
   <script src="https://code.highcharts.com/modules/export-data.js"></script>
   <script src="https://code.highcharts.com/modules/accessibility.js"></script>
   <script>
-	  // Radialize the colors
-	var data5 = data3
-	var data4 = data2
+	// kumpulan variable
+	var container = $('#container')
+	var dataBaik = container.attr('data-baik')
+	dataBaik = dataBaik == 'None' ? 0 : parseInt(dataBaik)
+	var dataRusak = container.attr('data-rusak')
+	dataRusak = dataRusak == 'None' ? 0 : parseInt(dataRusak)
+
+	// Radialize the colors
 	Highcharts.setOptions({
 		colors: Highcharts.map(Highcharts.getOptions().colors, function (color) {
 			return {
@@ -136,11 +145,11 @@
 		series: [{
 			name: 'Share',
 			data: [
-				{ name: 'Chrome', y: data5 },
-				{ name: 'Internet Explorer', y: data4 },
+				{ name: 'Profit', y: dataBaik },
+				{ name: 'Kerugian', y: dataRusak},
 			]
 		}]
 	});
   </script>
-  {% endblock %} -->
+  {% endblock %}
 {% endblock %}
