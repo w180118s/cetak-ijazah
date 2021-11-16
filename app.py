@@ -19,7 +19,7 @@ import pdfkit
 app = Flask(__name__)
 
 app.config['SECRET_KEY'] = "#$sdfsdfsd234g"
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://root@localhost/db.klinik'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://root:rahasia@127.0.0.1/db.klinik'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = True
 
 db = SQLAlchemy(app)
@@ -228,6 +228,10 @@ def kelola_user():
 def tambahuser():
     if request.method == "POST":
         username = request.form['username']
+        data = User.query.filter_by(username=username).first()
+        if data:
+            flash("Username sudah ada") 
+            return redirect(request.referrer)
         password = request.form['password']
         level = request.form['level']
         db.session.add(User(username, password, level))
@@ -409,6 +413,8 @@ def tambahsuplier():
     if request.method == "POST":
         perusahaan = request.form['perusahaan']
         kontak = request.form['kontak']
+        if type(kontak) is not str:
+            return jsonify({'success':False})
         alamat = request.form['alamat']
         db.session.add(Suplier(perusahaan, kontak, alamat,))
         db.session.commit()

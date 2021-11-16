@@ -5,19 +5,14 @@
  {% if session.level == 'Admin' %}
   <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
 	<h3 class="h2">Kelola User</h3>
-    {% with errors = get_flashed_messages(category_filter=["error"]) %}
-        {% if errors %}
-        <div class="alert-message block-message error">
-        <a class="close" href="#">×</a>
-        <ul>
-            {%- for msg in errors %}
-                <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                    <strong>{{msg}}</strong>
-                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                </div>
-            {% endfor -%}
-        </ul>
-        </div>
+    {% with messages = get_flashed_messages() %}
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <strong>{{message}}</strong>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        {% endfor %}
         {% endif %}
     {% endwith %}
 	

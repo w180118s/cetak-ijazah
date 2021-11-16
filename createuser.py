@@ -1,7 +1,7 @@
-from app import db, Konsumen
+from app import db, User
 
-username = "konsumen1"
+username = "admin"
 password = "12345"
-level = "konsumen"
-db.session.add(Konsumen(username, password, level))
+level = "Admin"
+db.session.add(User(username, password, level))
 db.session.commit()
