@@ -15,11 +15,12 @@ from flask_migrate import Config, Migrate, migrate
 import pandas as pd
 import datetime
 import pdfkit
+from flask import session as sesi
 
 app = Flask(__name__)
 
 app.config['SECRET_KEY'] = "#$sdfsdfsd234g"
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://root:rahasia@127.0.0.1/db.klinik'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://root:@localhost/db.klinik'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = True
 
 db = SQLAlchemy(app)
@@ -477,13 +478,14 @@ def pencarian():
 @app.route('/cari_data', methods=['GET', 'POST'])
 @login_dulu
 def cari_data():
+    acuan = sesi.get('id')
     if request.method == 'POST':
         keyword = request.form['q']
         formt = "%{0}%".format(keyword)
-        datanya = Pasien.query.join(User, Pasien.user_id == User.id).filter(or_(Pasien.tanggal.like(formt))).all()
+        datanya = Pasien.query.join(User, Pasien.user_id == User.id).filter(or_(Pasien.tanggal.like(formt)), (Pasien.user_id.like(acuan))).all()
         if datanya:
             flash("Data Berhasil di temukan")
-            tombol = "tombol"
+            tombol = "tombolcetak"
         elif not datanya:
             pesan = "Tidak ada Pasien yang diproses pada waktu tersebut"
             return render_template('/pencarian.html', datanya=datanya, pesan=pesan)
@@ -547,7 +549,6 @@ def import_csv():
         except:
             response = 'gagal'
         return response
-
 
 if __name__ == '__main__':
     app.run(debug=True)
