@@ -1,10 +1,13 @@
-from flask import Flask, render_template, request, redirect, sessions, url_for, session, flash, jsonify, current_app, make_response
+import os
+from dotenv import load_dotenv
+from flask import Flask, json, render_template, request, redirect, sessions, url_for, session, flash, jsonify, current_app, make_response
 from flask.scaffold import F
-from flask_sqlalchemy import SQLAlchemy
+from flask_sqlalchemy import SQLAlchemy, _record_queries
 from sqlalchemy import func, or_
 from sqlalchemy.orm import backref, selectin_polymorphic
 from flask_bcrypt import Bcrypt
 from flask_wtf import FlaskForm
+from sqlalchemy.sql.functions import user
 from werkzeug.wrappers import response
 # from werkzeug.wrappers import request
 from wtforms import StringField, PasswordField, SelectField
@@ -17,10 +20,14 @@ import datetime
 import pdfkit
 from flask import session as sesi
 
+load_dotenv()
 app = Flask(__name__)
 
-app.config['SECRET_KEY'] = "#$sdfsdfsd234g"
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://root:@localhost/db.klinik'
+SECRET_KEY = os.environ.get('SECRET_KEY')
+DATABASE_URI = os.environ.get('DATABASE_URI')
+
+app.config['SECRET_KEY'] = SECRET_KEY
+app.config['SQLALCHEMY_DATABASE_URI'] = DATABASE_URI
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = True
 
 db = SQLAlchemy(app)
@@ -490,6 +497,22 @@ def cari_data():
             pesan = "Tidak ada Pasien yang diproses pada waktu tersebut"
             return render_template('/pencarian.html', datanya=datanya, pesan=pesan)
         return render_template('/pencarian.html', datanya=datanya, tombol=tombol, keyword=keyword)
+
+@app.route('/daftarpasien', methods=['GET'])
+@login_dulu
+def daftarpasien():
+    # buat variable tipe data list(array)
+    pendaftaranList = []
+    # cari data di table pasien dimana 'user_id' sama dengan 'userid'
+    acuan = Pasien.query.all()
+    # pengandaian, jika data acuan ditemukan, maka
+    if acuan:
+        # pengulangan untuk memasukan id kedalam variable 'pendaftaranList' dari data acuan
+        for item in acuan:
+            pendaftaranList.append(item.pendaftaran_id)
+    # cari data di table pendaftaran dimana id pendafaftaran TIDAK SAMA DENGAN YANG ADA DI 'pendaftaranList'
+    data = Pendaftaran.query.filter(Pendaftaran.id.notin_(pendaftaranList)).all()
+    return render_template('test.html' , data=data)
 
 @app.route('/cetak_pdf/<keyword>', methods=['GET', 'POST'])
 @login_dulu

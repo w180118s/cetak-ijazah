@@ -1,0 +1,66 @@
+{% extends 'index.html' %}
+
+{% block body %}
+<main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+  <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+	<h3 class="h2">Pencarian Pasien</h3>
+	
+  </div>
+	 <div id="Loader">
+		<div class="d-flex justify-content-center">
+			<div class="spinner-border text-success" style=" width: 5rem; height: 5rem;" role="status">
+				<span class="visually-hidden">Loading...</span>
+			</div>
+		</div>
+	 </div>
+      {% with messages = get_flashed_messages() %}
+      {% if messages %}
+        {% for message in messages %}
+          <div class="alert alert-success alert-dismissible fade show" role="alert">
+            <strong>{{message}}</strong>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+          </div>
+        {% endfor %}
+      {% endif %}
+      {% if pesan %}
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+          <strong>{{pesan}}</strong>
+          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+      {% endif %}
+      {% endwith %}
+    </form>
+        <div class="card" style="margin-top: 10px;">
+            <div class="card-header">
+              Tabel Obat
+            </div>
+            <div class="card-body">
+                <table class="table table-bordered table-sm" id="myTable">
+                    <thead class="table table-dark">
+                      <tr>
+                        <th scope="col">No</th>
+                        <th scope="col">Nama </th>
+                        <th scope="col">Diagnosa</th>
+                        <th scope="col">Dokter</th>
+                        <th scope="col">Tanggal Periksa</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                        {% for dt in data %}
+                      <tr class="text-capitalize">
+                        <th scope="row">{{ loop.index }}</th>
+                        <td>{{dt.nama}}</td>
+                        <td>{{dt.tl}}</td>
+                        <td>{{dt.tgl_lahir}}</td>
+                        <td>{{dt.jk}}</td>
+                      </tr>
+                      {% endfor %}
+                    </tbody>
+                  </table>
+            </div>
+          </div>
+          {% if tombol %}
+          <a class="btn btn-danger" style="margin: 5px;" target="new" href="/cetak_pdf/{{keyword}}">Cetak Laporan</a>
+          {% endif %}
+	</div>
+{% endblock %}
